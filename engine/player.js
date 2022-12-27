@@ -1,15 +1,17 @@
 class Player {
 
-    constructor (x, y, s, v) {
+    constructor (x, y) {
 
       this.pos = createVector(x, y);
-      this.angle = 0;
       this.bullets = [];
-      this.s = s;
-      this.v = 4;
+      this.state = "idle";
+      this.facing = "down";
+      this.velocity = 1;
       this.color = "white";
       this.accent = "black";
-
+      this.spritesheet = base_player;
+      
+      this.renderer = new Renderer(this, 64, 64, 3);
 
     }
     
@@ -18,14 +20,9 @@ class Player {
       push();
 
       noStroke();
-      rectMode(CENTER);
+      // rectMode(CENTER);
       translate(this.pos.x, this.pos.y);
-      rotate(this.angle);
-      fill(this.color);
-      rect(0, 0, this.s, this.s, 5);
-      fill(this.accent);
-      triangle(-10, -10, 10, 0, -10, 10);
-
+      this.renderer.display(this.state, this.facing);
       
       pop();
 
@@ -36,13 +33,19 @@ class Player {
       let xSpeed = 0;
       let ySpeed = 0;
 
-      if (keyIsDown(65)) { xSpeed = -this.v; }
-      if (keyIsDown(68)) { xSpeed = this.v; }
-      if (keyIsDown(87)) { ySpeed = -this.v; }
-      if (keyIsDown(83)) { ySpeed = this.v; }
+      if (keyIsDown(65) || keyIsDown(37)) { xSpeed = -this.velocity; this.state = "walk"; }
+      else if (keyIsDown(68) || keyIsDown(39)) { xSpeed = this.velocity; this.state = "walk"; }
+      else if (keyIsDown(87) || keyIsDown(38)) { ySpeed = -this.velocity; this.state = "walk"; }
+      else if (keyIsDown(83) || keyIsDown(40)) { ySpeed = this.velocity; this.state = "walk"; }
+      else { this.state = "idle"; }
 
-      this.pos.add(xSpeed, ySpeed);
-      this.angle = atan2(mouseY - this.pos.y, mouseX - this.pos.x);
+      // sahil fix this movement thingy
+
+      if (xSpeed != 0 || ySpeed != 0) { this.pos.add(xSpeed, ySpeed); }
+      if (xSpeed > 0) { this.facing = "right"; }
+      else if (xSpeed < 0) { this.facing = "left"; }
+      else if (ySpeed > 0) { this.facing = "down"; }
+      else if (ySpeed < 0) { this.facing = "up"; }
 
     }
     
